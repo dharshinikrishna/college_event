@@ -1,0 +1,202 @@
+#creating database
+import mysql.connector as mysql
+college_db = mysql.connect(
+    host="localhost",
+    user="root",
+    password="12345678"
+)
+mycursor=college_db.cursor()
+mycursor.execute("create database college_db")
+print("successfully database created")
+
+#creating new table
+import mysql.connector
+mydb=mysql.connector.connect(
+    host="localhost",
+    user="root",
+    password="12345678",
+    database="college_db"
+)
+mycursor=mydb.cursor()
+mycursor.execute("create table college_admins_data(username varchar(200),password varchar(100),privilege varchar(200))")
+mycursor.execute("create table college_teacher_data(name varchar(100),event varchar(100),winner_rank varchar(200))")
+mycursor.execute("create table college_student_data(student_name varchar(100),event varchar(100),fees int)")
+print("successfully table created")
+
+#data inserting
+db = mysql.connect(
+    host="localhost",
+    user="root",
+    password="12345678",
+    database="college_db"
+)
+command_cursor = db.cursor()
+
+def admin_session():
+    while 1:
+        print("Admin Menu\n")
+        print("1. Register new Student")
+        print("2. Register new Teacher")
+        print("3. Delete Existing Student")
+        print("4. Delete Existing Teacher")
+        print("5. Logout")
+        
+        user_option = input(str("Option : "))
+        if user_option == "1":
+            print("Register New Student")
+            username = input(str("Student username : " ))
+            password = input(str("Student password : "))
+            query_vals = (username,password)
+            query = "insert into college_admins_data (username, password, privilege) VALUES (%s ,%s,'student')"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            print(username + "has been registered as a student")
+            
+        elif user_option == "2":
+            print("Register New Teacher")
+            username = input(str("Teacher username : " ))
+            password = input(str("Teacher password : "))
+            query_vals = (username,password)
+            query = "insert into college_admins_data (username, password, privilege) VALUES (%s ,%s,'teacher')"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            print(username + "has been registered as a teacher")
+            
+        elif user_option == "3":
+            print("Delete Existing Student Account")
+            username = input(str("Student username : "))
+            query_vals = (username, "student")
+            query = "DELETE FROM college_admins_data WHERE username = %s AND privilege = %s"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            if command_cursor.rowcount < 1:
+                print("User not found")
+            else:
+                print(username + " has been deleted")
+                
+        elif user_option == "4":
+            print("Delete Existing Teacher Account")
+            username = input(str("Teacher username : "))
+            query_vals = (username, "teacher")
+            query = "DELETE FROM college_admins_data WHERE username = %s AND privilege = %s"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            if command_cursor.rowcount < 1:
+                print("User not found")
+            else:
+                print(username + " has been deleted")
+                
+        elif user_option == "5":
+            break
+            
+def auth_admin():
+    print("Admin Login\n")
+    username = input(str("Username : "))
+    password = input(str("Password : "))
+    if username == "admin":
+        if password == "password":
+            admin_session()
+        else:
+            print("Incorrect password !")
+    else:
+        print(" Login details not recognized")
+        
+def teacher_session():
+    while 1:
+        print("Teacher Menu\n")
+        print("1. Register Student in Event")
+        print("2. Delete Existing Student")
+        print("3. Logout")
+        
+        teacher_option = input(str("Option : "))
+        if teacher_option == "1":
+            print("Register New Student")
+            username = input(str("Student username : " ))
+            event=input("Student's Event :")
+            rank=input("Student's rank:")
+            query_vals = (username,event,rank)
+            query = "insert into college_teacher_data(name,event,winner_rank) VALUES (%s ,%s,%s)"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            print("data inserted successfully")
+            
+        elif teacher_option == "2":
+            print("Delete Existing Student Account")
+            username = input(str("Student username : "))
+            query_vals = (username, "student")
+            query = "DELETE FROM college_teacher_data WHERE name = %s AND event = %s"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            if command_cursor.rowcount < 1:
+                print("User not found")
+            else:
+                print(username + " has been deleted")
+                
+        elif teacher_option == "5":
+            break
+            exit()
+            
+def teacher_login():
+    print("Teacher Login\n")
+    teacher= input("Teacher's username : ")
+    password=input("Password : ")
+    if teacher =="teacher":
+        if password =="pass":
+            teacher_session()
+        else:
+            print("Incorrect password ")
+    else:
+        print("Teacher login details not recognized")
+        
+def student_session():
+    while 1:
+        print("Student menu\n")
+        print("1.Event registeration ")
+        print("2.Logout")
+        student_option = input(str("Option : "))
+        if student_option == "1":
+            print("Register Event :")
+            username = input(str(" Name : " ))
+            event=input(" Event :")
+            fees=int(input("Event fees :"))
+            query_vals = (username,event,fees)
+            query = "insert into college_student_data (student_name,event,fees) VALUES (%s ,%s,%s)"
+            command_cursor.execute(query,query_vals)
+            db.commit()
+            print("data inserted successfully")
+            
+        elif student_option == "2":
+            break
+            
+def student_login():
+    print("Student Login\n")
+    student=input(str("Student's username : "))
+    password=input(str("password : "))
+    if student =="student":
+        if password == "student":
+            student_session()
+        else:
+            print("Incorrect password")
+    else:
+        print("Student login details not recognized ")
+        
+def main():
+    while 1:
+        print("Welcome to the college system\n")
+        print("1. Login as student")
+        print("2. Login as teacher")
+        print("3. Login as admin")
+        
+        user_option = input("Option : ")
+        if user_option == "1" :
+            print("Student login")
+            student_login()
+        elif user_option == "2":
+            print("Teacher login")
+            teacher_login()
+        elif user_option == "3" :
+            print("Admin login")
+            auth_admin()
+        else:
+            print("No valid option was selected")
+            exit()
